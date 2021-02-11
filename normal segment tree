@@ -1,0 +1,85 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef vector<int> vi;
+typedef pair<int,int> pii;
+ 
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+#define all(x) x.begin(),x.end()
+ 
+#define rfor(i,n) for(int i = int(n-1); i >= 0 ; i--)
+#define forn(i,n) for(int i = 0; i < int(n); i++)
+#define rep(i,n) for (int i=1;i <=int(n);i++)
+#define rrep(i,n) for(int i= int(n);i>=1;i--)
+const int L = 30;
+vi adj[200009];ll v[2000009]; ll ti=1;pair<ll,ll> t[200009];ll tree[1000009];
+void dfs(int u, int par){
+     t[u].fi=ti;ti++;
+     for (auto v: adj[u]){
+          if (v==par) continue;
+          dfs(v,u);
+     }
+     t[u].se=ti-1;
+}
+void upd(int i,int l,int r,ll id, ll val){
+     if (l == r){
+          tree[i]=val;
+          return;
+     }
+     int mid=(l+r)/2;
+     if (id <= mid){
+          upd(i*2,l,mid,id,val);
+     }
+     else {
+          upd(i*2+1,mid+1,r,id,val);
+     }
+     tree[i]=tree[i*2]+tree[i*2+1];
+}
+ll get(int i, int l,int r,ll ll, long long  rr){
+     if (r  < ll || l > rr ) return 0;
+     if (ll <= l && r <= rr) {
+          return tree[i];
+     }
+     int mid=(l+r)/2;
+     return get(i*2,l,mid,ll,rr) + get(i*2+1,mid+1,r,ll,rr);
+     
+}
+int main(){
+    
+     int n,q; cin >> n >> q;
+     rep(i,n) cin >> v[i];
+     rep(i,n-1) {
+          int x,y; cin >> x >> y;
+          adj[x].pb(y); adj[y].pb(x);
+     }
+     dfs(1,0);
+     rep(i,n) upd(1,1,n,ll(t[i].fi),ll(v[i]));
+   //  rep(i,n) cout << t[i].fi << ' ' << '\n';
+    // cout << "AAAA" << '\n';
+   //  rep(i,n) cout << get(1,1,n,i,i) << ' ' ; cout << '\n';
+   //   cout << get(1,1,n,3,5) << ' ' ; cout << '\n';
+     rep(i,q){
+          int num,a,b; cin >> num;
+          if (num == 1){
+               cin >> a >> b;
+               upd(1,1,n,t[a].fi,ll(b));
+     //          cout << "AAAA" << '\n';
+              //     rep(i,n) cout << get(1,1,n,i,i) << ' ' ; cout << '\n';
+          }
+          else {
+               cin >> a;
+            //   cout << "a :" << a << '\n';
+            //   cout << "a : first ,second : " << t[a].fi << ' ' << t[a].se << '\n';
+               
+               cout << get(1,1,n,t[a].fi,t[a].se) << '\n';
+          }
+     }
+     
+                   
+    
+    
+     return 0;
+}
