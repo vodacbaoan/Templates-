@@ -10,8 +10,10 @@ typedef long long ll;
 int a[800009];ll b[800009];int l[800006],r[800006];int laz[800006];
 
 string s,f;
+void up(int i){
+     a[i]= a[i*2+1]+a[i*2];
+}
 void build(int i,int l, int r){
-   
      
      laz[i]=-1;
      if (l==r) {
@@ -21,23 +23,27 @@ void build(int i,int l, int r){
      int mid=(l+r)/2;
      build(i*2,l,mid);
      build(i*2+1,mid+1,r);
-     a[i]=a[i*2]+a[i*2+1];
+     up(i);
      
 }
 void push(int i,int l,int r){
-       assert(i > 0);
+     
      if (laz[i]==-1) return;
      if (l!=r){
+          //left child
           int mid=(l+r)/2;
           laz[i*2]=laz[i];
           a[i*2]=(mid-l+1)*laz[i];
+          // right child
           laz[i*2+1]=laz[i];
           a[i*2+1]=(r-(mid+1)+1)*laz[i];
+          
           laz[i]=-1;
      }
      laz[i]=-1;
 
 }
+
 int get(int i,int l,int r,int ll, int rr){
       
      if (l > rr || r < ll ) return 0;
@@ -49,11 +55,25 @@ int get(int i,int l,int r,int ll, int rr){
      return get(i*2,l,mid,ll,rr) + get(i*2+1,mid+1,r,ll,rr);
      
 }
+
+int gett(int i,int l,int r,int ind){
+     
+     if (l == ind){
+          return a[i];
+     }
+     push(i,l,r);
+     int mid=(l+r)/2;
+     if (ind <= mid) return gett(i*2,l,mid,ind);
+     return gett(i*2+1,mid+1,r,ind);
+     
+}
+
 void modify(int i,int l,int r,int val){
       
      laz[i]=val;
      a[i]=(r-l+1)*val;
 }
+
 void upd(int i,int l,int r,int ll,int rr,int val){
    
      if (l > rr || r < ll ) return;
@@ -67,7 +87,8 @@ void upd(int i,int l,int r,int ll,int rr,int val){
      upd(i*2,l,mid,ll,rr,val);
      
      upd(i*2+1,mid+1,r,ll,rr,val);
-     a[i]=a[i*2+1]+a[i*2];
+     
+     up(i);
      return;
 }
 int main(){
